@@ -9,6 +9,5 @@ documentation = "https://docs.rs/serde-bench/"
 include = ["Cargo.toml", "src/**/*.rs"]
 
 [dependencies]
-byteorder = "0.5"
-num-traits = "0.1"
-serde = "0.8"
+byteorder = "1.0"
+serde = "0.9"

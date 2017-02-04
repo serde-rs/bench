@@ -1,6 +1,7 @@
 use serde::{ser, de};
 use serde::de::value;
-use std::{self, error, fmt, io, result, string};
+use std::{self, error, io, result, string};
+use std::fmt::{self, Display};
 
 #[derive(Debug)]
 pub struct Error;
@@ -13,24 +14,20 @@ impl error::Error for Error {
     }
 }
 
-impl fmt::Display for Error {
+impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> result::Result<(), fmt::Error> {
         write!(f, "error")
     }
 }
 
 impl ser::Error for Error {
-    fn custom<T: Into<String>>(_: T) -> Self {
+    fn custom<T: Display>(_: T) -> Self {
         Error
     }
 }
 
 impl de::Error for Error {
-    fn custom<T: Into<String>>(_: T) -> Self {
-        Error
-    }
-
-    fn end_of_stream() -> Self {
+    fn custom<T: Display>(_: T) -> Self {
         Error
     }
 }

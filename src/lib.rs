@@ -1,5 +1,4 @@
 extern crate byteorder;
-extern crate num_traits;
 
 extern crate serde;
 use serde::{Serialize, Deserialize};
@@ -13,7 +12,7 @@ pub use error::{Error, Result};
 
 use std::io::{Write, Read};
 
-pub fn serialize<W: ?Sized, T>(writer: &mut W, value: &T) -> Result<()>
+pub fn serialize<W, T>(writer: W, value: &T) -> Result<()>
     where W: Write,
           T: Serialize
 {
