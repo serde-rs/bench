@@ -15,6 +15,7 @@ impl<R: Read> Deserializer<R> {
         Deserializer { reader: reader }
     }
 
+    #[inline]
     fn read_string(&mut self) -> Result<String> {
         let len = try!(Deserialize::deserialize(&mut *self));
         let mut buffer = Vec::new();
@@ -46,6 +47,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         Err(Error)
     }
 
+    #[inline]
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -79,12 +81,14 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         visitor.visit_i8(try!(self.reader.read_i8()))
     }
 
+    #[inline]
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_unit()
     }
 
+    #[inline]
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -105,18 +109,21 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         visitor.visit_char(res)
     }
 
+    #[inline]
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_str(&try!(self.read_string()))
     }
 
+    #[inline]
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_string(try!(self.read_string()))
     }
 
+    #[inline]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -126,12 +133,14 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         visitor.visit_byte_buf(buf)
     }
 
+    #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         self.deserialize_bytes(visitor)
     }
 
+    #[inline]
     fn deserialize_enum<V>(self,
                            _enum: &'static str,
                            _variants: &'static [&'static str],
@@ -142,18 +151,21 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         visitor.visit_enum(self)
     }
 
+    #[inline]
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_seq(self)
     }
 
+    #[inline]
     fn deserialize_seq_fixed_size<V>(self, _: usize, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_seq(self)
     }
 
+    #[inline]
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -164,6 +176,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         }
     }
 
+    #[inline]
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -175,6 +188,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         impl<'a, R: Read> de::SeqVisitor for SeqVisitor<'a, R> {
             type Error = Error;
 
+            #[inline]
             fn visit_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
                 where T: DeserializeSeed
             {
@@ -195,6 +209,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         })
     }
 
+    #[inline]
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
@@ -206,6 +221,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         impl<'a, R: Read> de::MapVisitor for MapVisitor<'a, R> {
             type Error = Error;
 
+            #[inline]
             fn visit_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>>
                 where K: DeserializeSeed
             {
@@ -217,6 +233,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
                 }
             }
 
+            #[inline]
             fn visit_value_seed<V>(&mut self, seed: V) -> Result<V::Value>
                 where V: DeserializeSeed
             {
@@ -232,6 +249,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         })
     }
 
+    #[inline]
     fn deserialize_struct<V>(self,
                              _name: &str,
                              _fields: &'static [&'static str],
@@ -249,12 +267,14 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         Err(Error)
     }
 
+    #[inline]
     fn deserialize_newtype_struct<V>(self, _name: &str, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_newtype_struct(self)
     }
 
+    #[inline]
     fn deserialize_unit_struct<V>(self,
                                   _name: &'static str,
                                   visitor: V)
@@ -264,6 +284,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         visitor.visit_unit()
     }
 
+    #[inline]
     fn deserialize_tuple_struct<V>(self,
                                    _name: &'static str,
                                    _len: usize,
@@ -286,6 +307,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
 impl<R: Read> SeqVisitor for Deserializer<R> {
     type Error = Error;
 
+    #[inline]
     fn visit_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
         where T: DeserializeSeed
     {
@@ -297,6 +319,7 @@ impl<'a, R: Read> EnumVisitor for &'a mut Deserializer<R> {
     type Error = Error;
     type Variant = Self;
 
+    #[inline]
     fn visit_variant_seed<V>(self, seed: V) -> Result<(V::Value, Self)>
         where V: DeserializeSeed
     {
@@ -310,22 +333,26 @@ impl<'a, R: Read> EnumVisitor for &'a mut Deserializer<R> {
 impl<'a, R: Read> VariantVisitor for &'a mut Deserializer<R> {
     type Error = Error;
 
+    #[inline]
     fn visit_unit(self) -> Result<()> {
         Ok(())
     }
 
+    #[inline]
     fn visit_newtype_seed<T>(self, seed: T) -> Result<T::Value>
         where T: DeserializeSeed
     {
         seed.deserialize(self)
     }
 
+    #[inline]
     fn visit_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_seq(self)
     }
 
+    #[inline]
     fn visit_struct<V>(self,
                        _fields: &'static [&'static str],
                        visitor: V)
@@ -356,6 +383,7 @@ static UTF8_CHAR_WIDTH: [u8; 256] = [
     4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xFF
 ];
 
+#[inline]
 fn utf8_char_width(b: u8) -> usize {
     UTF8_CHAR_WIDTH[b as usize] as usize
 }
