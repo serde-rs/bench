@@ -1,8 +1,7 @@
 # serde-bench
 
 A minimal serialization format for use in benchmarks of core Serde. The format
-closely resembles Bincode but without length prefixes for fixed-sized arrays,
-which Bincode has only to maintain compatibility with rustc-serialize.
+closely resembles Bincode.
 
 ## License
 
