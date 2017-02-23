@@ -13,7 +13,7 @@ pub use error::{Error, Result};
 pub fn serialize<T>(value: &T) -> Result<Vec<u8>>
     where T: Serialize
 {
-    let mut bytes = Vec::new();
+    let mut bytes = Vec::with_capacity(128);
     {
         let mut ser = Serializer::new(&mut bytes);
         try!(Serialize::serialize(value, &mut ser));
