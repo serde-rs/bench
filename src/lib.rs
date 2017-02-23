@@ -10,20 +10,20 @@ use de::Deserializer;
 mod error;
 pub use error::{Error, Result};
 
-use std::io::{Write, Read};
-
-pub fn serialize<W, T>(writer: W, value: &T) -> Result<()>
-    where W: Write,
-          T: Serialize
+pub fn serialize<T>(value: &T) -> Result<Vec<u8>>
+    where T: Serialize
 {
-    let mut ser = Serializer::new(writer);
-    Serialize::serialize(value, &mut ser)
+    let mut bytes = Vec::new();
+    {
+        let mut ser = Serializer::new(&mut bytes);
+        try!(Serialize::serialize(value, &mut ser));
+    }
+    Ok(bytes)
 }
 
-pub fn deserialize<R, T>(reader: R) -> Result<T>
-    where R: Read,
-          T: Deserialize
+pub fn deserialize<T>(mut bytes: &[u8]) -> Result<T>
+    where T: Deserialize
 {
-    let mut de = Deserializer::new(reader);
+    let mut de = Deserializer::new(&mut bytes);
     Deserialize::deserialize(&mut de)
 }
