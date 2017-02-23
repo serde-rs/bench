@@ -16,11 +16,17 @@ impl<R: Read> Deserializer<R> {
     }
 
     #[inline]
-    fn read_string(&mut self) -> Result<String> {
+    fn read_vec(&mut self) -> Result<Vec<u8>> {
         let len = try!(Deserialize::deserialize(&mut *self));
-        let mut buffer = Vec::new();
-        try!(self.reader.by_ref().take(len).read_to_end(&mut buffer));
-        String::from_utf8(buffer).map_err(From::from)
+        let mut bytes = Vec::with_capacity(len);
+        unsafe { bytes.set_len(len); }
+        try!(self.reader.read_exact(&mut bytes));
+        Ok(bytes)
+    }
+
+    #[inline]
+    fn read_string(&mut self) -> Result<String> {
+        String::from_utf8(try!(self.read_vec())).map_err(Into::into)
     }
 }
 
@@ -127,17 +133,14 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
-        let len = try!(Deserialize::deserialize(&mut *self));
-        let mut buf = vec![0; len];
-        try!(self.reader.read_exact(&mut buf[..]));
-        visitor.visit_byte_buf(buf)
+        visitor.visit_bytes(&try!(self.read_vec()))
     }
 
     #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
-        self.deserialize_bytes(visitor)
+        visitor.visit_byte_buf(try!(self.read_vec()))
     }
 
     #[inline]
