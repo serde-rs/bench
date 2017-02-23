@@ -43,8 +43,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     fn deserialize<V>(self, _visitor: V) -> Result<V::Value>
         where V: Visitor
     {
-        // not supported
-        Err(Error)
+        Err(Error::new("`deserialize` is not supported"))
     }
 
     #[inline]
@@ -54,7 +53,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         match try!(self.reader.read_u8()) {
             1 => visitor.visit_bool(true),
             0 => visitor.visit_bool(false),
-            _ => Err(Error),
+            _ => Err(Error::new("invalid boolean")),
         }
     }
 
@@ -99,13 +98,15 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
             return visitor.visit_char(buf[0] as char);
         }
         if width == 0 {
-            return Err(Error);
+            return Err(Error::new("invalid char"));
         }
         try!(self.reader.read_exact(&mut buf[1..width]));
-        let res = try!(match str::from_utf8(&buf[..width]) {
-            Ok(s) => Ok(s.chars().next().unwrap()),
-            Err(_) => Err(Error),
-        });
+        let res = match str::from_utf8(&buf[..width]) {
+            Ok(s) => s.chars().next().unwrap(),
+            Err(err) => {
+                return Err(err.into());
+            }
+        };
         visitor.visit_char(res)
     }
 
@@ -172,7 +173,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
         match try!(self.reader.read_u8()) {
             0 => visitor.visit_none(),
             1 => visitor.visit_some(self),
-            _ => Err(Error),
+            _ => Err(Error::new("invalid Option")),
         }
     }
 
@@ -263,8 +264,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     fn deserialize_struct_field<V>(self, _visitor: V) -> Result<V::Value>
         where V: Visitor
     {
-        // not supported
-        Err(Error)
+        Err(Error::new("`deserialize_struct_field` is not supported"))
     }
 
     #[inline]
@@ -298,8 +298,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>
         where V: Visitor
     {
-        // not supported
-        Err(Error)
+        Err(Error::new("`deserialize_ignored_any` is not supported"))
     }
 }
 
