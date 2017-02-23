@@ -12,9 +12,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 impl Error {
     pub fn new<T: Display>(msg: T) -> Self {
-        Error {
-            msg: msg.to_string(),
-        }
+        Error { msg: msg.to_string() }
     }
 }
 

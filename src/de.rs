@@ -36,7 +36,6 @@ macro_rules! impl_nums {
     };
 }
 
-
 impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     type Error = Error;
 
@@ -275,10 +274,7 @@ impl<'a, R: Read> serde::Deserializer for &'a mut Deserializer<R> {
     }
 
     #[inline]
-    fn deserialize_unit_struct<V>(self,
-                                  _name: &'static str,
-                                  visitor: V)
-                                  -> Result<V::Value>
+    fn deserialize_unit_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_unit()
@@ -352,10 +348,7 @@ impl<'a, R: Read> VariantVisitor for &'a mut Deserializer<R> {
     }
 
     #[inline]
-    fn visit_struct<V>(self,
-                       _fields: &'static [&'static str],
-                       visitor: V)
-                       -> Result<V::Value>
+    fn visit_struct<V>(self, _fields: &'static [&'static str], visitor: V) -> Result<V::Value>
         where V: Visitor
     {
         visitor.visit_seq(self)

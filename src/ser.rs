@@ -1,6 +1,7 @@
 use byteorder::{NativeEndian, WriteBytesExt};
 use serde;
-use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct, SerializeTupleVariant, SerializeMap, SerializeStruct, SerializeStructVariant};
+use serde::ser::{SerializeSeq, SerializeTuple, SerializeTupleStruct, SerializeTupleVariant,
+                 SerializeMap, SerializeStruct, SerializeStructVariant};
 use std::io::Write;
 use {Error, Result};
 
@@ -148,7 +149,10 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
     }
 
     #[inline]
-    fn serialize_tuple_struct(self, _name: &'static str, _len: usize) -> Result<Self::SerializeTupleStruct> {
+    fn serialize_tuple_struct(self,
+                              _name: &'static str,
+                              _len: usize)
+                              -> Result<Self::SerializeTupleStruct> {
         Ok(self)
     }
 
@@ -195,11 +199,11 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
 
     #[inline]
     fn serialize_newtype_variant<T: ?Sized>(self,
-                                    _name: &'static str,
-                                    variant_index: usize,
-                                    _variant: &'static str,
-                                    value: &T)
-                                    -> Result<()>
+                                            _name: &'static str,
+                                            variant_index: usize,
+                                            _variant: &'static str,
+                                            value: &T)
+                                            -> Result<()>
         where T: serde::ser::Serialize
     {
         try!(self.serialize_enum_tag(variant_index));
