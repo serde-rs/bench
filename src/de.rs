@@ -1,9 +1,9 @@
 use byteorder::{NetworkEndian, ReadBytesExt};
-use serde::de::value::{self, ValueDeserializer};
+use serde::de::value::ValueDeserializer;
 use serde::de::{self, Deserialize, DeserializeSeed, Visitor, EnumVisitor, SeqVisitor, VariantVisitor};
 use serde;
 use std::io::Read;
-use std::{mem, result, str};
+use std::{mem, str};
 use {Error, Result};
 
 pub struct Deserializer<R> {
@@ -321,10 +321,10 @@ impl<'a, R: Read> EnumVisitor for &'a mut Deserializer<R> {
     fn visit_variant_seed<V>(self, seed: V) -> Result<(V::Value, Self)>
         where V: DeserializeSeed
     {
-        let index: u32 = try!(Deserialize::deserialize(&mut *self));
-        let deserializer = index.into_deserializer();
-        let attempt: result::Result<V::Value, value::Error> = seed.deserialize(deserializer);
-        Ok((try!(attempt), self))
+        let index = try!(Deserialize::deserialize(&mut *self));
+        let deserializer = <u32 as ValueDeserializer<Error>>::into_deserializer(index);
+        let value = try!(seed.deserialize(deserializer));
+        Ok((value, self))
     }
 }
 

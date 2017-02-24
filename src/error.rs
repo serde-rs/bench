@@ -1,5 +1,4 @@
 use serde::{ser, de};
-use serde::de::value;
 use std::{self, error, io, str, string};
 use std::fmt::{self, Display};
 
@@ -54,12 +53,6 @@ impl From<str::Utf8Error> for Error {
 
 impl From<string::FromUtf8Error> for Error {
     fn from(err: string::FromUtf8Error) -> Self {
-        Error::new(err)
-    }
-}
-
-impl From<value::Error> for Error {
-    fn from(err: value::Error) -> Self {
         Error::new(err)
     }
 }
