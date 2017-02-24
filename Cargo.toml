@@ -11,3 +11,7 @@ include = ["Cargo.toml", "src/**/*.rs"]
 [dependencies]
 byteorder = "1.0"
 serde = "0.9"
+
+[dev-dependencies]
+bincode = "1.0.0-alpha2"
+serde_derive = "0.9"
