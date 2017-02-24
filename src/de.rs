@@ -1,4 +1,4 @@
-use byteorder::{NativeEndian, ReadBytesExt};
+use byteorder::{NetworkEndian, ReadBytesExt};
 use serde::de::value::{self, ValueDeserializer};
 use serde::de::{self, Deserialize, DeserializeSeed, Visitor, EnumVisitor, SeqVisitor, VariantVisitor};
 use serde;
@@ -36,7 +36,7 @@ macro_rules! impl_nums {
         fn $dser_method<V>(self, visitor: V) -> Result<V::Value>
             where V: Visitor
         {
-            let value = try!(self.reader.$reader_method::<NativeEndian>());
+            let value = try!(self.reader.$reader_method::<NetworkEndian>());
             visitor.$visitor_method(value)
         }
     };
