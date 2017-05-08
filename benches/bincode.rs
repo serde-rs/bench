@@ -1,5 +1,7 @@
 #![feature(test)]
 
+extern crate byteorder;
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -8,7 +10,7 @@ extern crate serde;
 extern crate serde_bench;
 extern crate test;
 
-use bincode::SizeLimit::Infinite;
+use bincode::Infinite;
 use test::Bencher;
 
 #[derive(Serialize, Deserialize)]
@@ -43,7 +45,9 @@ fn bincode_serialize(b: &mut Bencher) {
     let foo = Foo::default();
 
     b.iter(|| {
-        bincode::serialize(&foo, Infinite).unwrap()
+        use serde::Serialize;
+        let mut bytes = Vec::with_capacity(128);
+        foo.serialize(&mut bincode::internal::Serializer::<_, byteorder::NetworkEndian>::new(&mut bytes)).unwrap()
     })
 }
 

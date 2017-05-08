@@ -21,8 +21,8 @@ pub fn serialize<T>(value: &T) -> Result<Vec<u8>>
     Ok(bytes)
 }
 
-pub fn deserialize<T>(mut bytes: &[u8]) -> Result<T>
-    where T: Deserialize
+pub fn deserialize<'de, T>(mut bytes: &'de [u8]) -> Result<T>
+    where T: Deserialize<'de>
 {
     let mut de = Deserializer::new(&mut bytes);
     Deserialize::deserialize(&mut de)

@@ -15,11 +15,6 @@ impl<W> Serializer<W>
     pub fn new(w: W) -> Self {
         Serializer { writer: w }
     }
-
-    #[inline]
-    fn serialize_enum_tag(&mut self, tag: usize) -> Result<()> {
-        serde::Serializer::serialize_u32(self, tag as u32)
-    }
 }
 
 impl<'a, W> serde::Serializer for &'a mut Serializer<W>
@@ -139,11 +134,6 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
     }
 
     #[inline]
-    fn serialize_seq_fixed_size(self, _len: usize) -> Result<Self::SerializeSeq> {
-        Ok(self)
-    }
-
-    #[inline]
     fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
         Ok(self)
     }
@@ -159,11 +149,11 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
     #[inline]
     fn serialize_tuple_variant(self,
                                _name: &'static str,
-                               variant_index: usize,
+                               variant_index: u32,
                                _variant: &'static str,
                                _len: usize)
                                -> Result<Self::SerializeTupleVariant> {
-        try!(self.serialize_enum_tag(variant_index));
+        try!(self.serialize_u32(variant_index));
         Ok(self)
     }
 
@@ -182,11 +172,11 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
     #[inline]
     fn serialize_struct_variant(self,
                                 _name: &'static str,
-                                variant_index: usize,
+                                variant_index: u32,
                                 _variant: &'static str,
                                 _len: usize)
                                 -> Result<Self::SerializeStructVariant> {
-        try!(self.serialize_enum_tag(variant_index));
+        try!(self.serialize_u32(variant_index));
         Ok(self)
     }
 
@@ -200,23 +190,23 @@ impl<'a, W> serde::Serializer for &'a mut Serializer<W>
     #[inline]
     fn serialize_newtype_variant<T: ?Sized>(self,
                                             _name: &'static str,
-                                            variant_index: usize,
+                                            variant_index: u32,
                                             _variant: &'static str,
                                             value: &T)
                                             -> Result<()>
         where T: serde::ser::Serialize
     {
-        try!(self.serialize_enum_tag(variant_index));
+        try!(self.serialize_u32(variant_index));
         value.serialize(self)
     }
 
     #[inline]
     fn serialize_unit_variant(self,
                               _name: &'static str,
-                              variant_index: usize,
+                              variant_index: u32,
                               _variant: &'static str)
                               -> Result<()> {
-        self.serialize_enum_tag(variant_index)
+        self.serialize_u32(variant_index)
     }
 }
 
