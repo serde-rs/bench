@@ -11,6 +11,8 @@ extern crate serde_bench;
 extern crate test;
 
 use bincode::Infinite;
+use byteorder::NetworkEndian;
+use serde::{Serialize, Deserialize};
 use test::Bencher;
 
 #[derive(Serialize, Deserialize)]
@@ -33,10 +35,15 @@ impl Default for Foo {
 #[bench]
 fn bincode_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
-    let bytes = bincode::serialize(&foo, Infinite).unwrap();
+    let mut bytes = Vec::with_capacity(128);
+    type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
+    foo.serialize(&mut BincodeSerializer::new(&mut bytes)).unwrap();
 
     b.iter(|| {
-        bincode::deserialize::<Foo>(&bytes).unwrap()
+        type BincodeDeserializer<R, S> = bincode::internal::Deserializer<R, S, NetworkEndian>;
+        let read = bincode::read_types::SliceReader::new(&bytes);
+        let mut de = BincodeDeserializer::new(read, Infinite);
+        Foo::deserialize(&mut de).unwrap()
     })
 }
 
@@ -45,16 +52,17 @@ fn bincode_serialize(b: &mut Bencher) {
     let foo = Foo::default();
 
     b.iter(|| {
-        use serde::Serialize;
         let mut bytes = Vec::with_capacity(128);
-        foo.serialize(&mut bincode::internal::Serializer::<_, byteorder::NetworkEndian>::new(&mut bytes)).unwrap()
+        type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
+        foo.serialize(&mut BincodeSerializer::new(&mut bytes)).unwrap()
     })
 }
 
 #[bench]
 fn serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
-    let bytes = serde_bench::serialize(&foo).unwrap();
+    let mut bytes = Vec::new();
+    serde_bench::serialize(&mut bytes, &foo).unwrap();
 
     b.iter(|| {
         serde_bench::deserialize::<Foo>(&bytes).unwrap()
@@ -66,6 +74,7 @@ fn serde_serialize(b: &mut Bencher) {
     let foo = Foo::default();
 
     b.iter(|| {
-        serde_bench::serialize(&foo).unwrap()
+        let mut bytes = Vec::with_capacity(128);
+        serde_bench::serialize(&mut bytes, &foo).unwrap()
     })
 }
