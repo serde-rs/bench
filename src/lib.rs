@@ -10,15 +10,11 @@ use de::Deserializer;
 mod error;
 pub use error::{Error, Result};
 
-pub fn serialize<T>(value: &T) -> Result<Vec<u8>>
+pub fn serialize<T>(out: &mut Vec<u8>, value: &T) -> Result<()>
     where T: Serialize
 {
-    let mut bytes = Vec::with_capacity(128);
-    {
-        let mut ser = Serializer::new(&mut bytes);
-        try!(Serialize::serialize(value, &mut ser));
-    }
-    Ok(bytes)
+    let mut ser = Serializer::new(out);
+    Serialize::serialize(value, &mut ser)
 }
 
 pub fn deserialize<'de, T>(mut bytes: &'de [u8]) -> Result<T>
