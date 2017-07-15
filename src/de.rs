@@ -15,17 +15,16 @@ impl<'de> Deserializer<'de> {
     }
 
     #[inline]
-    fn read_vec(&mut self) -> Result<Vec<u8>> {
+    fn read_slice(&mut self) -> Result<&'de [u8]> {
         let len = try!(Deserialize::deserialize(&mut *self));
-        let mut bytes = Vec::with_capacity(len);
-        unsafe { bytes.set_len(len); }
-        try!(self.bytes.read_exact(&mut bytes));
-        Ok(bytes)
+        let (slice, rest) = self.bytes.split_at(len);
+        self.bytes = rest;
+        Ok(slice)
     }
 
     #[inline]
-    fn read_string(&mut self) -> Result<String> {
-        String::from_utf8(try!(self.read_vec())).map_err(Into::into)
+    fn read_str(&mut self) -> Result<&'de str> {
+        str::from_utf8(try!(self.read_slice())).map_err(Into::into)
     }
 }
 
@@ -118,28 +117,28 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_str(&try!(self.read_string()))
+        visitor.visit_borrowed_str(try!(self.read_str()))
     }
 
     #[inline]
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_string(try!(self.read_string()))
+        visitor.visit_borrowed_str(try!(self.read_str()))
     }
 
     #[inline]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_bytes(&try!(self.read_vec()))
+        visitor.visit_borrowed_bytes(try!(self.read_slice()))
     }
 
     #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_byte_buf(try!(self.read_vec()))
+        visitor.visit_borrowed_bytes(try!(self.read_slice()))
     }
 
     #[inline]
