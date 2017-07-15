@@ -1,8 +1,7 @@
 use byteorder::{NetworkEndian, ReadBytesExt};
 use serde::de::{self, Deserialize, DeserializeSeed, Visitor, EnumAccess, SeqAccess, VariantAccess, IntoDeserializer};
 use serde;
-use std::io::Read;
-use std::{mem, str};
+use std::str;
 use {Error, Result};
 
 pub struct Deserializer<'de> {
@@ -94,22 +93,20 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        let mut buf: [u8; 4] = unsafe { mem::uninitialized() };
-        try!(self.bytes.read_exact(&mut buf[..1]));
-        let width = utf8_char_width(buf[0]);
+        let width = utf8_char_width(self.bytes[0]);
         if width == 1 {
-            return visitor.visit_char(buf[0] as char);
+            return visitor.visit_char(self.bytes[0] as char);
         }
         if width == 0 {
             return Err(Error::new("invalid char"));
         }
-        try!(self.bytes.read_exact(&mut buf[1..width]));
-        let res = match str::from_utf8(&buf[..width]) {
+        let res = match str::from_utf8(&self.bytes[..width]) {
             Ok(s) => s.chars().next().unwrap(),
             Err(err) => {
                 return Err(err.into());
             }
         };
+        self.bytes = &self.bytes[width..];
         visitor.visit_char(res)
     }
 
