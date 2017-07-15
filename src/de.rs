@@ -5,13 +5,13 @@ use std::io::Read;
 use std::{mem, str};
 use {Error, Result};
 
-pub struct Deserializer<R> {
-    reader: R,
+pub struct Deserializer<'de> {
+    bytes: &'de [u8],
 }
 
-impl<R: Read> Deserializer<R> {
-    pub fn new(reader: R) -> Self {
-        Deserializer { reader: reader }
+impl<'de> Deserializer<'de> {
+    pub fn new(bytes: &'de [u8]) -> Self {
+        Deserializer { bytes: bytes }
     }
 
     #[inline]
@@ -19,7 +19,7 @@ impl<R: Read> Deserializer<R> {
         let len = try!(Deserialize::deserialize(&mut *self));
         let mut bytes = Vec::with_capacity(len);
         unsafe { bytes.set_len(len); }
-        try!(self.reader.read_exact(&mut bytes));
+        try!(self.bytes.read_exact(&mut bytes));
         Ok(bytes)
     }
 
@@ -35,13 +35,13 @@ macro_rules! impl_nums {
         fn $dser_method<V>(self, visitor: V) -> Result<V::Value>
             where V: Visitor<'de>
         {
-            let value = try!(self.reader.$reader_method::<NetworkEndian>());
+            let value = try!(self.bytes.$reader_method::<NetworkEndian>());
             visitor.$visitor_method(value)
         }
     };
 }
 
-impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
+impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     type Error = Error;
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value>
@@ -54,7 +54,7 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        match try!(self.reader.read_u8()) {
+        match try!(self.bytes.read_u8()) {
             1 => visitor.visit_bool(true),
             0 => visitor.visit_bool(false),
             _ => Err(Error::new("invalid boolean")),
@@ -74,14 +74,14 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_u8(try!(self.reader.read_u8()))
+        visitor.visit_u8(try!(self.bytes.read_u8()))
     }
 
     #[inline]
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        visitor.visit_i8(try!(self.reader.read_i8()))
+        visitor.visit_i8(try!(self.bytes.read_i8()))
     }
 
     #[inline]
@@ -96,7 +96,7 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
         where V: Visitor<'de>
     {
         let mut buf: [u8; 4] = unsafe { mem::uninitialized() };
-        try!(self.reader.read_exact(&mut buf[..1]));
+        try!(self.bytes.read_exact(&mut buf[..1]));
         let width = utf8_char_width(buf[0]);
         if width == 1 {
             return visitor.visit_char(buf[0] as char);
@@ -104,7 +104,7 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
         if width == 0 {
             return Err(Error::new("invalid char"));
         }
-        try!(self.reader.read_exact(&mut buf[1..width]));
+        try!(self.bytes.read_exact(&mut buf[1..width]));
         let res = match str::from_utf8(&buf[..width]) {
             Ok(s) => s.chars().next().unwrap(),
             Err(err) => {
@@ -164,7 +164,7 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        match try!(self.reader.read_u8()) {
+        match try!(self.bytes.read_u8()) {
             0 => visitor.visit_none(),
             1 => visitor.visit_some(self),
             _ => Err(Error::new("invalid Option")),
@@ -175,12 +175,12 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        struct SeqAccess<'a, R: Read + 'a> {
-            deserializer: &'a mut Deserializer<R>,
+        struct SeqAccess<'a, 'de: 'a> {
+            deserializer: &'a mut Deserializer<'de>,
             remaining: usize,
         }
 
-        impl<'de, 'a, R: Read> de::SeqAccess<'de> for SeqAccess<'a, R> {
+        impl<'de, 'a> de::SeqAccess<'de> for SeqAccess<'a, 'de> {
             type Error = Error;
 
             #[inline]
@@ -208,12 +208,12 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
         where V: Visitor<'de>
     {
-        struct MapAccess<'a, R: Read + 'a> {
-            deserializer: &'a mut Deserializer<R>,
+        struct MapAccess<'a, 'de: 'a> {
+            deserializer: &'a mut Deserializer<'de>,
             remaining: usize,
         }
 
-        impl<'de, 'a, R: Read> de::MapAccess<'de> for MapAccess<'a, R> {
+        impl<'de, 'a> de::MapAccess<'de> for MapAccess<'a, 'de> {
             type Error = Error;
 
             #[inline]
@@ -294,7 +294,7 @@ impl<'de, 'a, R: Read> serde::Deserializer<'de> for &'a mut Deserializer<R> {
 }
 
 // For tuples, structs, tuple structs, and fixed size seqs.
-impl<'de, R: Read> SeqAccess<'de> for Deserializer<R> {
+impl<'de> SeqAccess<'de> for Deserializer<'de> {
     type Error = Error;
 
     #[inline]
@@ -305,7 +305,7 @@ impl<'de, R: Read> SeqAccess<'de> for Deserializer<R> {
     }
 }
 
-impl<'de, 'a, R: Read> EnumAccess<'de> for &'a mut Deserializer<R> {
+impl<'de, 'a> EnumAccess<'de> for &'a mut Deserializer<'de> {
     type Error = Error;
     type Variant = Self;
 
@@ -320,7 +320,7 @@ impl<'de, 'a, R: Read> EnumAccess<'de> for &'a mut Deserializer<R> {
     }
 }
 
-impl<'de, 'a, R: Read> VariantAccess<'de> for &'a mut Deserializer<R> {
+impl<'de, 'a> VariantAccess<'de> for &'a mut Deserializer<'de> {
     type Error = Error;
 
     #[inline]

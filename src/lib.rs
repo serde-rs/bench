@@ -17,9 +17,9 @@ pub fn serialize<T>(out: &mut Vec<u8>, value: &T) -> Result<()>
     Serialize::serialize(value, &mut ser)
 }
 
-pub fn deserialize<'de, T>(mut bytes: &'de [u8]) -> Result<T>
+pub fn deserialize<'de, T>(bytes: &'de [u8]) -> Result<T>
     where T: Deserialize<'de>
 {
-    let mut de = Deserializer::new(&mut bytes);
+    let mut de = Deserializer::new(bytes);
     Deserialize::deserialize(&mut de)
 }
