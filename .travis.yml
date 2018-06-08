@@ -1,0 +1,10 @@
+sudo: false
+language: rust
+
+matrix:
+  include:
+    - rust: stable
+    - rust: beta
+    - rust: 1.15.0
+    - rust: nightly
+      script: cargo bench --no-run
