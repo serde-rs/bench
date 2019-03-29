@@ -1,19 +1,11 @@
 #![feature(test)]
 
-extern crate byteorder;
-
-#[macro_use]
-extern crate serde_derive;
-
-extern crate bincode;
-extern crate serde;
-extern crate serde_bench;
 extern crate test;
+use test::Bencher;
 
 use bincode::Infinite;
 use byteorder::NetworkEndian;
-use serde::{Serialize, Deserialize};
-use test::Bencher;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 struct Foo {
@@ -37,7 +29,8 @@ fn bincode_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
     type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
-    foo.serialize(&mut BincodeSerializer::new(&mut bytes)).unwrap();
+    foo.serialize(&mut BincodeSerializer::new(&mut bytes))
+        .unwrap();
 
     b.iter(|| {
         type BincodeDeserializer<R, S> = bincode::internal::Deserializer<R, S, NetworkEndian>;
@@ -54,7 +47,8 @@ fn bincode_serialize(b: &mut Bencher) {
     b.iter(|| {
         let mut bytes = Vec::with_capacity(128);
         type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
-        foo.serialize(&mut BincodeSerializer::new(&mut bytes)).unwrap()
+        foo.serialize(&mut BincodeSerializer::new(&mut bytes))
+            .unwrap()
     })
 }
 
@@ -64,9 +58,7 @@ fn serde_deserialize(b: &mut Bencher) {
     let mut bytes = Vec::new();
     serde_bench::serialize(&mut bytes, &foo).unwrap();
 
-    b.iter(|| {
-        serde_bench::deserialize::<Foo>(&bytes).unwrap()
-    })
+    b.iter(|| serde_bench::deserialize::<Foo>(&bytes).unwrap())
 }
 
 #[bench]

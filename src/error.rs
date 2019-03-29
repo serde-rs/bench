@@ -1,6 +1,6 @@
-use serde::{ser, de};
-use std::{self, error, io, str, string};
+use serde::{de, ser};
 use std::fmt::{self, Display};
+use std::{self, error, io, str, string};
 
 #[derive(Debug)]
 pub struct Error {
@@ -11,7 +11,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 impl Error {
     pub fn new<T: Display>(msg: T) -> Self {
-        Error { msg: msg.to_string() }
+        Error {
+            msg: msg.to_string(),
+        }
     }
 }
 
