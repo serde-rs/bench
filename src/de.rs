@@ -381,7 +381,7 @@ impl<'de, 'a> VariantAccess<'de> for &'a mut Deserializer<'de> {
     }
 }
 
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[rustfmt::skip]
 static UTF8_CHAR_WIDTH: [u8; 256] = [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0x1F
