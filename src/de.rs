@@ -13,7 +13,7 @@ pub struct Deserializer<'de> {
 
 impl<'de> Deserializer<'de> {
     pub fn new(bytes: &'de [u8]) -> Self {
-        Deserializer { bytes: bytes }
+        Deserializer { bytes }
     }
 
     #[inline]
