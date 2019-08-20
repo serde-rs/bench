@@ -118,7 +118,7 @@ where
 
     #[inline]
     fn serialize_str(self, v: &str) -> Result<()> {
-        try!(self.serialize_u64(v.len() as u64));
+        self.serialize_u64(v.len() as u64)?;
         self.writer.write_all(v.as_bytes()).map_err(From::from)
     }
 
@@ -131,7 +131,7 @@ where
 
     #[inline]
     fn serialize_bytes(self, v: &[u8]) -> Result<()> {
-        try!(self.serialize_u64(v.len() as u64));
+        self.serialize_u64(v.len() as u64)?;
         self.writer.write_all(v).map_err(From::from)
     }
 
@@ -145,14 +145,14 @@ where
     where
         T: serde::Serialize,
     {
-        try!(self.writer.write_u8(1));
+        self.writer.write_u8(1)?;
         v.serialize(self)
     }
 
     #[inline]
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq> {
         let len = len.expect("do not know how to serialize a sequence with no length");
-        try!(self.serialize_u64(len as u64));
+        self.serialize_u64(len as u64)?;
         Ok(self)
     }
 
@@ -178,14 +178,14 @@ where
         _variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
-        try!(self.serialize_u32(variant_index));
+        self.serialize_u32(variant_index)?;
         Ok(self)
     }
 
     #[inline]
     fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap> {
         let len = len.expect("do not know how to serialize a map with no length");
-        try!(self.serialize_u64(len as u64));
+        self.serialize_u64(len as u64)?;
         Ok(self)
     }
 
@@ -202,7 +202,7 @@ where
         _variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeStructVariant> {
-        try!(self.serialize_u32(variant_index));
+        self.serialize_u32(variant_index)?;
         Ok(self)
     }
 
@@ -225,7 +225,7 @@ where
     where
         T: serde::ser::Serialize,
     {
-        try!(self.serialize_u32(variant_index));
+        self.serialize_u32(variant_index)?;
         value.serialize(self)
     }
 
