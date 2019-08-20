@@ -1,11 +1,3 @@
-#[macro_use]
-extern crate serde_derive;
-
-extern crate bincode;
-extern crate byteorder;
-extern crate serde;
-extern crate serde_bench;
-
 use bincode::Infinite;
 use byteorder::NetworkEndian;
 use serde::{Deserialize, Serialize};

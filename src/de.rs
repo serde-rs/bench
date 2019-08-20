@@ -1,3 +1,4 @@
+use crate::{Error, Result};
 use byteorder::{NetworkEndian, ReadBytesExt};
 use serde;
 use serde::de::{
@@ -5,7 +6,6 @@ use serde::de::{
     Visitor,
 };
 use std::str;
-use {Error, Result};
 
 pub struct Deserializer<'de> {
     bytes: &'de [u8],

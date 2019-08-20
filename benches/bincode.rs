@@ -1,13 +1,5 @@
 #![feature(test)]
 
-extern crate byteorder;
-
-#[macro_use]
-extern crate serde_derive;
-
-extern crate bincode;
-extern crate serde;
-extern crate serde_bench;
 extern crate test;
 
 use bincode::Infinite;

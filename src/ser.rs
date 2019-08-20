@@ -1,3 +1,4 @@
+use crate::{Error, Result};
 use byteorder::{NetworkEndian, WriteBytesExt};
 use serde;
 use serde::ser::{
@@ -5,7 +6,6 @@ use serde::ser::{
     SerializeTupleStruct, SerializeTupleVariant,
 };
 use std::io::Write;
-use {Error, Result};
 
 pub struct Serializer<W> {
     writer: W,

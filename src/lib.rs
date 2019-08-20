@@ -1,6 +1,3 @@
-extern crate byteorder;
-
-extern crate serde;
 use serde::{Deserialize, Serialize};
 
 mod ser;
