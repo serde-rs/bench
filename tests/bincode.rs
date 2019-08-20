@@ -8,7 +8,7 @@ extern crate serde_bench;
 
 use bincode::Infinite;
 use byteorder::NetworkEndian;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Foo {
@@ -33,7 +33,8 @@ fn test_ser() {
 
     let mut bincode_bytes = Vec::new();
     type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
-    foo.serialize(&mut BincodeSerializer::new(&mut bincode_bytes)).unwrap();
+    foo.serialize(&mut BincodeSerializer::new(&mut bincode_bytes))
+        .unwrap();
 
     let mut serde_bytes = Vec::new();
     serde_bench::serialize(&mut serde_bytes, &foo).unwrap();

@@ -1,6 +1,9 @@
 use byteorder::{NetworkEndian, ReadBytesExt};
-use serde::de::{self, Deserialize, DeserializeSeed, Visitor, EnumAccess, SeqAccess, VariantAccess, IntoDeserializer};
 use serde;
+use serde::de::{
+    self, Deserialize, DeserializeSeed, EnumAccess, IntoDeserializer, SeqAccess, VariantAccess,
+    Visitor,
+};
 use std::str;
 use {Error, Result};
 
@@ -43,14 +46,16 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     type Error = Error;
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         Err(Error::new("`deserialize_any` is not supported"))
     }
 
     #[inline]
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         match try!(self.bytes.read_u8()) {
             1 => visitor.visit_bool(true),
@@ -70,28 +75,32 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_u8(try!(self.bytes.read_u8()))
     }
 
     #[inline]
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_i8(try!(self.bytes.read_i8()))
     }
 
     #[inline]
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_unit()
     }
 
     #[inline]
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         let width = utf8_char_width(self.bytes[0]);
         if width == 1 {
@@ -112,53 +121,61 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_borrowed_str(try!(self.read_str()))
     }
 
     #[inline]
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_borrowed_str(try!(self.read_str()))
     }
 
     #[inline]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_borrowed_bytes(try!(self.read_slice()))
     }
 
     #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_borrowed_bytes(try!(self.read_slice()))
     }
 
     #[inline]
-    fn deserialize_enum<V>(self,
-                           _enum: &'static str,
-                           _variants: &'static [&'static str],
-                           visitor: V)
-                           -> Result<V::Value>
-        where V: Visitor<'de>
+    fn deserialize_enum<V>(
+        self,
+        _enum: &'static str,
+        _variants: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_enum(self)
     }
 
     #[inline]
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_seq(self)
     }
 
     #[inline]
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         match try!(self.bytes.read_u8()) {
             0 => visitor.visit_none(),
@@ -169,7 +186,8 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         struct SeqAccess<'a, 'de: 'a> {
             deserializer: &'a mut Deserializer<'de>,
@@ -181,7 +199,8 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
             #[inline]
             fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
-                where T: DeserializeSeed<'de>
+            where
+                T: DeserializeSeed<'de>,
             {
                 if self.remaining > 0 {
                     self.remaining -= 1;
@@ -202,7 +221,8 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         struct MapAccess<'a, 'de: 'a> {
             deserializer: &'a mut Deserializer<'de>,
@@ -214,7 +234,8 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
             #[inline]
             fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>>
-                where K: DeserializeSeed<'de>
+            where
+                K: DeserializeSeed<'de>,
             {
                 if self.remaining > 0 {
                     self.remaining -= 1;
@@ -226,7 +247,8 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
 
             #[inline]
             fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value>
-                where V: DeserializeSeed<'de>
+            where
+                V: DeserializeSeed<'de>,
             {
                 seed.deserialize(&mut *self.deserializer)
             }
@@ -241,49 +263,57 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     }
 
     #[inline]
-    fn deserialize_struct<V>(self,
-                             _name: &str,
-                             _fields: &'static [&'static str],
-                             visitor: V)
-                             -> Result<V::Value>
-        where V: Visitor<'de>
+    fn deserialize_struct<V>(
+        self,
+        _name: &str,
+        _fields: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_seq(self)
     }
 
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         Err(Error::new("`deserialize_identifier` is not supported"))
     }
 
     #[inline]
     fn deserialize_newtype_struct<V>(self, _name: &str, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_newtype_struct(self)
     }
 
     #[inline]
     fn deserialize_unit_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_unit()
     }
 
     #[inline]
-    fn deserialize_tuple_struct<V>(self,
-                                   _name: &'static str,
-                                   _len: usize,
-                                   visitor: V)
-                                   -> Result<V::Value>
-        where V: Visitor<'de>
+    fn deserialize_tuple_struct<V>(
+        self,
+        _name: &'static str,
+        _len: usize,
+        visitor: V,
+    ) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_seq(self)
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         Err(Error::new("`deserialize_ignored_any` is not supported"))
     }
@@ -295,7 +325,8 @@ impl<'de> SeqAccess<'de> for Deserializer<'de> {
 
     #[inline]
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
-        where T: DeserializeSeed<'de>
+    where
+        T: DeserializeSeed<'de>,
     {
         seed.deserialize(self).map(Some)
     }
@@ -307,7 +338,8 @@ impl<'de, 'a> EnumAccess<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self)>
-        where V: DeserializeSeed<'de>
+    where
+        V: DeserializeSeed<'de>,
     {
         let index = try!(Deserialize::deserialize(&mut *self));
         let deserializer = <u32 as IntoDeserializer<Error>>::into_deserializer(index);
@@ -326,21 +358,24 @@ impl<'de, 'a> VariantAccess<'de> for &'a mut Deserializer<'de> {
 
     #[inline]
     fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value>
-        where T: DeserializeSeed<'de>
+    where
+        T: DeserializeSeed<'de>,
     {
         seed.deserialize(self)
     }
 
     #[inline]
     fn tuple_variant<V>(self, _len: usize, visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_seq(self)
     }
 
     #[inline]
     fn struct_variant<V>(self, _fields: &'static [&'static str], visitor: V) -> Result<V::Value>
-        where V: Visitor<'de>
+    where
+        V: Visitor<'de>,
     {
         visitor.visit_seq(self)
     }
