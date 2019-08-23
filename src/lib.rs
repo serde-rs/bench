@@ -1,11 +1,12 @@
+mod de;
+mod error;
+mod ser;
+
+use self::de::Deserializer;
+use self::ser::Serializer;
 use serde::{Deserialize, Serialize};
 
-mod ser;
-use ser::Serializer;
-mod de;
-use de::Deserializer;
-mod error;
-pub use error::{Error, Result};
+pub use self::error::{Error, Result};
 
 pub fn serialize<T>(out: &mut Vec<u8>, value: &T) -> Result<()>
 where
