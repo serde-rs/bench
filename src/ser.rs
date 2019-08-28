@@ -1,5 +1,5 @@
 use crate::{Error, Result};
-use byteorder::{NetworkEndian, WriteBytesExt};
+use byteorder::{NativeEndian, WriteBytesExt};
 use serde;
 use serde::ser::{
     SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
@@ -58,21 +58,21 @@ where
     #[inline]
     fn serialize_u16(self, v: u16) -> Result<()> {
         self.writer
-            .write_u16::<NetworkEndian>(v)
+            .write_u16::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_u32(self, v: u32) -> Result<()> {
         self.writer
-            .write_u32::<NetworkEndian>(v)
+            .write_u32::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_u64(self, v: u64) -> Result<()> {
         self.writer
-            .write_u64::<NetworkEndian>(v)
+            .write_u64::<NativeEndian>(v)
             .map_err(From::from)
     }
 
@@ -84,35 +84,35 @@ where
     #[inline]
     fn serialize_i16(self, v: i16) -> Result<()> {
         self.writer
-            .write_i16::<NetworkEndian>(v)
+            .write_i16::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_i32(self, v: i32) -> Result<()> {
         self.writer
-            .write_i32::<NetworkEndian>(v)
+            .write_i32::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_i64(self, v: i64) -> Result<()> {
         self.writer
-            .write_i64::<NetworkEndian>(v)
+            .write_i64::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_f32(self, v: f32) -> Result<()> {
         self.writer
-            .write_f32::<NetworkEndian>(v)
+            .write_f32::<NativeEndian>(v)
             .map_err(From::from)
     }
 
     #[inline]
     fn serialize_f64(self, v: f64) -> Result<()> {
         self.writer
-            .write_f64::<NetworkEndian>(v)
+            .write_f64::<NativeEndian>(v)
             .map_err(From::from)
     }
 

@@ -1,5 +1,5 @@
 use crate::{Error, Result};
-use byteorder::{NetworkEndian, ReadBytesExt};
+use byteorder::{NativeEndian, ReadBytesExt};
 use serde;
 use serde::de::{
     self, Deserialize, DeserializeSeed, EnumAccess, IntoDeserializer, SeqAccess, VariantAccess,
@@ -36,7 +36,7 @@ macro_rules! impl_nums {
         fn $dser_method<V>(self, visitor: V) -> Result<V::Value>
             where V: Visitor<'de>
         {
-            let value = self.bytes.$reader_method::<NetworkEndian>()?;
+            let value = self.bytes.$reader_method::<NativeEndian>()?;
             visitor.$visitor_method(value)
         }
     };
