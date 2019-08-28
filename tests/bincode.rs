@@ -1,5 +1,3 @@
-use bincode::Infinite;
-use byteorder::NetworkEndian;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -23,10 +21,7 @@ impl Default for Foo {
 fn test_ser() {
     let foo = Foo::default();
 
-    let mut bincode_bytes = Vec::new();
-    type BincodeSerializer<W> = bincode::internal::Serializer<W, NetworkEndian>;
-    foo.serialize(&mut BincodeSerializer::new(&mut bincode_bytes))
-        .unwrap();
+    let bincode_bytes = bincode::serialize(&foo).unwrap();
 
     let mut serde_bytes = Vec::new();
     serde_bench::serialize(&mut serde_bytes, &foo).unwrap();
@@ -40,10 +35,7 @@ fn test_de() {
     let mut bytes = Vec::new();
     serde_bench::serialize(&mut bytes, &foo).unwrap();
 
-    type BincodeDeserializer<R, S> = bincode::internal::Deserializer<R, S, NetworkEndian>;
-    let bincode_read = bincode::read_types::SliceReader::new(&bytes);
-    let mut bincode_de = BincodeDeserializer::new(bincode_read, Infinite);
-    let bincode_foo = Foo::deserialize(&mut bincode_de).unwrap();
+    let bincode_foo = bincode::deserialize::<Foo>(&bytes).unwrap();
     assert_eq!(bincode_foo, foo);
 
     let serde_foo = serde_bench::deserialize::<Foo>(&bytes).unwrap();
