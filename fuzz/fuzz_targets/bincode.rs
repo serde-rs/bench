@@ -29,7 +29,9 @@ fn serialize(foo: &Foo) -> Vec<u8> {
 
 fn deserialize(bytes: &Vec<u8>) -> Foo {
     let bincode_foo = bincode::deserialize::<Foo>(&bytes).unwrap();
+
     let serde_foo = serde_bench::deserialize::<Foo>(&bytes).unwrap();
+
     assert_eq!(serde_foo, bincode_foo);
 
     serde_foo
@@ -42,14 +44,12 @@ fn extract(data: &[u8], cursor: &mut usize, len: usize) -> Vec<u8> {
     } else {
         (data.len() - *cursor, len - (data.len() - *cursor))
     };
-    for _ in 0..left {
-        v.push(data[*cursor]);
-        *cursor += 1;
-    }
-    for _ in 0..right {
-        v.push(0u8);
-    }
+    v.extend(&data[*cursor..(*cursor + left)]);
+    *cursor += left;
+    v.extend(std::iter::repeat(0u8).take(right));
+
     assert_eq!(v.len(), len);
+
     v
 }
 
@@ -96,12 +96,8 @@ fn extract_bool(data: &[u8], cursor: &mut usize) -> bool {
 }
 
 fn extract_remainder_as_string(data: &[u8], cursor: &mut usize) -> String {
-    if *cursor >= data.len() {
-        "".into()
-    } else {
-        let (_, right) = data.split_at(*cursor);
-        String::from_utf8_lossy(right).into()
-    }
+    let (_, right) = data.split_at(*cursor);
+    String::from_utf8_lossy(right).into()
 }
 
 fuzz_target!(|data: &[u8]| {
@@ -122,7 +118,8 @@ fuzz_target!(|data: &[u8]| {
         some_bool: extract_bool(&data, &mut cursor),
         some_str: extract_remainder_as_string(&data, &mut cursor),
     };
+
     let bytes = serialize(&foo);
-    let foo2 = deserialize(&bytes);
-    assert_eq!(foo, foo2);
+    let foo_serde = deserialize(&bytes);
+    assert_eq!(foo, foo_serde);
 });
