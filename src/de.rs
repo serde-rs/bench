@@ -1,6 +1,5 @@
 use crate::{Error, Result};
 use byteorder::{NativeEndian, ReadBytesExt};
-use serde;
 use serde::de::{
     self, Deserialize, DeserializeSeed, EnumAccess, IntoDeserializer, SeqAccess, VariantAccess,
     Visitor,
