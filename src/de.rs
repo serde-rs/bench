@@ -33,7 +33,8 @@ macro_rules! impl_nums {
     ($ty:ty, $dser_method:ident, $visitor_method:ident, $reader_method:ident) => {
         #[inline]
         fn $dser_method<V>(self, visitor: V) -> Result<V::Value>
-            where V: Visitor<'de>
+        where
+            V: Visitor<'de>,
         {
             let value = self.bytes.$reader_method::<NativeEndian>()?;
             visitor.$visitor_method(value)
