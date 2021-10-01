@@ -1,3 +1,5 @@
+#![allow(clippy::blacklisted_name)]
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
