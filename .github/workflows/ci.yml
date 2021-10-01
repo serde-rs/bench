@@ -21,3 +21,11 @@ jobs:
       - run: cargo test
       - run: cargo bench --no-run
         if: matrix.rust == 'nightly'
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@clippy
+      - run: cargo clippy -- -Dclippy::all
