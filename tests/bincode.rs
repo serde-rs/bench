@@ -1,4 +1,4 @@
-#![allow(clippy::blacklisted_name)]
+#![allow(clippy::blacklisted_name, clippy::unseparated_literal_suffix)]
 
 use serde::{Deserialize, Serialize};
 
