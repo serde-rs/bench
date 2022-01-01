@@ -1,4 +1,8 @@
-#![allow(clippy::cast_possible_truncation, clippy::missing_errors_doc)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::missing_errors_doc
+)]
 
 mod de;
 mod error;
