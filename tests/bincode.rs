@@ -1,4 +1,8 @@
-#![allow(clippy::blacklisted_name, clippy::unseparated_literal_suffix)]
+#![allow(
+    clippy::blacklisted_name,
+    clippy::derive_partial_eq_without_eq,
+    clippy::unseparated_literal_suffix
+)]
 
 use serde::{Deserialize, Serialize};
 
