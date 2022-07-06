@@ -17,11 +17,7 @@ impl Error {
     }
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        &self.msg
-    }
-}
+impl error::Error for Error {}
 
 impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
