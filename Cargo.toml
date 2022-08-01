@@ -2,6 +2,7 @@
 name = "serde-bench"
 version = "0.0.7"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+categories = ["encoding", "development-tools::profiling"]
 description = "Minimal serialization format for benchmarking Serde"
 documentation = "https://docs.rs/serde-bench/"
 edition = "2018"
