@@ -1,6 +1,6 @@
 #![allow(
-    clippy::blacklisted_name,
     clippy::derive_partial_eq_without_eq,
+    clippy::disallowed_names,
     clippy::unseparated_literal_suffix
 )]
 
