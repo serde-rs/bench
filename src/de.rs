@@ -317,6 +317,10 @@ impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
     {
         Err(Error::new("`deserialize_ignored_any` is not supported"))
     }
+
+    fn is_human_readable(&self) -> bool {
+        false
+    }
 }
 
 // For tuples, structs, tuple structs, and fixed size seqs.
