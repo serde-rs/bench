@@ -221,6 +221,10 @@ where
     ) -> Result<()> {
         self.serialize_u32(variant_index)
     }
+
+    fn is_human_readable(&self) -> bool {
+        false
+    }
 }
 
 impl<'a, W> SerializeSeq for &'a mut Serializer<W>
