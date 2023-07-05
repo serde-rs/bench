@@ -2,6 +2,9 @@
 
 extern crate test;
 
+mod flavor;
+
+use crate::flavor::PreallocatedVec;
 use serde::{Deserialize, Serialize};
 use test::Bencher;
 
@@ -52,7 +55,10 @@ fn postcard_deserialize(b: &mut Bencher) {
 fn postcard_serialize(b: &mut Bencher) {
     let foo = Foo::default();
 
-    b.iter(|| postcard::to_stdvec(&foo).unwrap());
+    b.iter(|| {
+        let mut bytes = Vec::with_capacity(128);
+        postcard::serialize_with_flavor(&foo, PreallocatedVec::new(&mut bytes)).unwrap()
+    });
 }
 
 #[bench]
