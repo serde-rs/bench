@@ -41,6 +41,21 @@ fn bincode_serialize(b: &mut Bencher) {
 }
 
 #[bench]
+fn postcard_deserialize(b: &mut Bencher) {
+    let foo = Foo::default();
+    let bytes = postcard::to_stdvec(&foo).unwrap();
+
+    b.iter(|| postcard::from_bytes::<Foo>(&bytes).unwrap());
+}
+
+#[bench]
+fn postcard_serialize(b: &mut Bencher) {
+    let foo = Foo::default();
+
+    b.iter(|| postcard::to_stdvec(&foo).unwrap());
+}
+
+#[bench]
 fn serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::new();
