@@ -5,12 +5,12 @@ authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "development-tools::profiling"]
 description = "Minimal serialization format for benchmarking Serde"
 documentation = "https://docs.rs/serde-bench/"
-edition = "2018"
+edition = "2021"
 include = ["Cargo.toml", "src/**/*.rs"]
 keywords = ["serde", "serialization"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/bench"
-rust-version = "1.34"
+rust-version = "1.56"
 
 [dependencies]
 byteorder = "1.4.3"
