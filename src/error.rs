@@ -1,6 +1,6 @@
 use serde::{de, ser};
 use std::fmt::{self, Display};
-use std::{self, error, io, str, string};
+use std::{error, io, str, string};
 
 #[derive(Debug)]
 pub struct Error {
