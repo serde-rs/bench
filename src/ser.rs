@@ -70,6 +70,13 @@ where
     }
 
     #[inline]
+    fn serialize_u128(self, v: u128) -> Result<()> {
+        self.writer
+            .write_u128::<NativeEndian>(v)
+            .map_err(From::from)
+    }
+
+    #[inline]
     fn serialize_i8(self, v: i8) -> Result<()> {
         self.writer.write_i8(v).map_err(From::from)
     }
@@ -87,6 +94,13 @@ where
     #[inline]
     fn serialize_i64(self, v: i64) -> Result<()> {
         self.writer.write_i64::<NativeEndian>(v).map_err(From::from)
+    }
+
+    #[inline]
+    fn serialize_i128(self, v: i128) -> Result<()> {
+        self.writer
+            .write_i128::<NativeEndian>(v)
+            .map_err(From::from)
     }
 
     #[inline]
