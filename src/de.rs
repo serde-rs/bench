@@ -42,7 +42,7 @@ macro_rules! impl_nums {
     };
 }
 
-impl<'de, 'a> serde::Deserializer<'de> for &'a mut Deserializer<'de> {
+impl<'de> serde::Deserializer<'de> for &mut Deserializer<'de> {
     type Error = Error;
 
     fn deserialize_any<V>(self, _visitor: V) -> Result<V::Value>
@@ -336,7 +336,7 @@ impl<'de> SeqAccess<'de> for Deserializer<'de> {
     }
 }
 
-impl<'de, 'a> EnumAccess<'de> for &'a mut Deserializer<'de> {
+impl<'de> EnumAccess<'de> for &mut Deserializer<'de> {
     type Error = Error;
     type Variant = Self;
 
@@ -352,7 +352,7 @@ impl<'de, 'a> EnumAccess<'de> for &'a mut Deserializer<'de> {
     }
 }
 
-impl<'de, 'a> VariantAccess<'de> for &'a mut Deserializer<'de> {
+impl<'de> VariantAccess<'de> for &mut Deserializer<'de> {
     type Error = Error;
 
     #[inline]

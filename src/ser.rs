@@ -19,7 +19,7 @@ where
     }
 }
 
-impl<'a, W> serde::Serializer for &'a mut Serializer<W>
+impl<W> serde::Serializer for &mut Serializer<W>
 where
     W: Write,
 {
@@ -227,7 +227,7 @@ where
     }
 }
 
-impl<'a, W> SerializeSeq for &'a mut Serializer<W>
+impl<W> SerializeSeq for &mut Serializer<W>
 where
     W: Write,
 {
@@ -248,7 +248,7 @@ where
     }
 }
 
-impl<'a, W> SerializeTuple for &'a mut Serializer<W>
+impl<W> SerializeTuple for &mut Serializer<W>
 where
     W: Write,
 {
@@ -269,7 +269,7 @@ where
     }
 }
 
-impl<'a, W> SerializeTupleStruct for &'a mut Serializer<W>
+impl<W> SerializeTupleStruct for &mut Serializer<W>
 where
     W: Write,
 {
@@ -290,7 +290,7 @@ where
     }
 }
 
-impl<'a, W> SerializeTupleVariant for &'a mut Serializer<W>
+impl<W> SerializeTupleVariant for &mut Serializer<W>
 where
     W: Write,
 {
@@ -311,7 +311,7 @@ where
     }
 }
 
-impl<'a, W> SerializeMap for &'a mut Serializer<W>
+impl<W> SerializeMap for &mut Serializer<W>
 where
     W: Write,
 {
@@ -340,7 +340,7 @@ where
     }
 }
 
-impl<'a, W> SerializeStruct for &'a mut Serializer<W>
+impl<W> SerializeStruct for &mut Serializer<W>
 where
     W: Write,
 {
@@ -361,7 +361,7 @@ where
     }
 }
 
-impl<'a, W> SerializeStructVariant for &'a mut Serializer<W>
+impl<W> SerializeStructVariant for &mut Serializer<W>
 where
     W: Write,
 {
