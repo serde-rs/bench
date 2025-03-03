@@ -1,6 +1,7 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
+    clippy::elidable_lifetime_names,
     clippy::missing_errors_doc,
     clippy::needless_lifetimes
 )]
