@@ -30,7 +30,7 @@ impl<'de> Deserializer<'de> {
 }
 
 macro_rules! impl_nums {
-    ($ty:ty, $dser_method:ident, $visitor_method:ident, $reader_method:ident) => {
+    ($dser_method:ident, $visitor_method:ident, $reader_method:ident) => {
         #[inline]
         fn $dser_method<V>(self, visitor: V) -> Result<V::Value>
         where
@@ -64,14 +64,14 @@ impl<'de> serde::Deserializer<'de> for &mut Deserializer<'de> {
         }
     }
 
-    impl_nums!(u16, deserialize_u16, visit_u16, read_u16);
-    impl_nums!(u32, deserialize_u32, visit_u32, read_u32);
-    impl_nums!(u64, deserialize_u64, visit_u64, read_u64);
-    impl_nums!(i16, deserialize_i16, visit_i16, read_i16);
-    impl_nums!(i32, deserialize_i32, visit_i32, read_i32);
-    impl_nums!(i64, deserialize_i64, visit_i64, read_i64);
-    impl_nums!(f32, deserialize_f32, visit_f32, read_f32);
-    impl_nums!(f64, deserialize_f64, visit_f64, read_f64);
+    impl_nums!(deserialize_u16, visit_u16, read_u16);
+    impl_nums!(deserialize_u32, visit_u32, read_u32);
+    impl_nums!(deserialize_u64, visit_u64, read_u64);
+    impl_nums!(deserialize_i16, visit_i16, read_i16);
+    impl_nums!(deserialize_i32, visit_i32, read_i32);
+    impl_nums!(deserialize_i64, visit_i64, read_i64);
+    impl_nums!(deserialize_f32, visit_f32, read_f32);
+    impl_nums!(deserialize_f64, visit_f64, read_f64);
 
     #[inline]
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
