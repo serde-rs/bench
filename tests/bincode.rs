@@ -27,7 +27,7 @@ impl Default for Foo {
 fn test_ser() {
     let foo = Foo::default();
 
-    let bincode_bytes = bincode::serialize(&foo).unwrap();
+    let bincode_bytes = bincode::serde::encode_to_vec(&foo, bincode::config::legacy()).unwrap();
 
     let mut serde_bytes = Vec::new();
     serde_bench::serialize(&mut serde_bytes, &foo).unwrap();
@@ -41,7 +41,10 @@ fn test_de() {
     let mut bytes = Vec::new();
     serde_bench::serialize(&mut bytes, &foo).unwrap();
 
-    let bincode_foo = bincode::deserialize::<Foo>(&bytes).unwrap();
+    let bincode_foo =
+        bincode::serde::decode_from_slice::<Foo, _>(&bytes, bincode::config::legacy())
+            .unwrap()
+            .0;
     assert_eq!(bincode_foo, foo);
 
     let serde_foo = serde_bench::deserialize::<Foo>(&bytes).unwrap();
