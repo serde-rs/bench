@@ -67,9 +67,11 @@ impl<'de> serde::Deserializer<'de> for &mut Deserializer<'de> {
     impl_nums!(deserialize_u16, visit_u16, read_u16);
     impl_nums!(deserialize_u32, visit_u32, read_u32);
     impl_nums!(deserialize_u64, visit_u64, read_u64);
+    impl_nums!(deserialize_u128, visit_u128, read_u128);
     impl_nums!(deserialize_i16, visit_i16, read_i16);
     impl_nums!(deserialize_i32, visit_i32, read_i32);
     impl_nums!(deserialize_i64, visit_i64, read_i64);
+    impl_nums!(deserialize_i128, visit_i128, read_i128);
     impl_nums!(deserialize_f32, visit_f32, read_f32);
     impl_nums!(deserialize_f64, visit_f64, read_f64);
 
