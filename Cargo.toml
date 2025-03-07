@@ -1,6 +1,6 @@
 [package]
 name = "serde-bench"
-version = "0.0.12"
+version = "0.0.13"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "development-tools::profiling"]
 description = "Minimal serialization format for benchmarking Serde"
