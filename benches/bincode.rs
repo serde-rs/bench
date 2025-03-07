@@ -41,10 +41,11 @@ fn bincode_deserialize(b: &mut Bencher) {
 #[bench]
 fn bincode_serialize(b: &mut Bencher) {
     let foo = Foo::default();
+    let mut bytes = Vec::with_capacity(128);
 
     b.iter(|| {
         let foo = black_box(&foo);
-        let mut bytes = Vec::with_capacity(128);
+        bytes.clear();
         bincode::serialize_into(&mut bytes, foo).unwrap();
     });
 }
@@ -63,10 +64,11 @@ fn postcard_deserialize(b: &mut Bencher) {
 #[bench]
 fn postcard_serialize(b: &mut Bencher) {
     let foo = Foo::default();
+    let mut bytes = Vec::with_capacity(128);
 
     b.iter(|| {
         let foo = black_box(&foo);
-        let mut bytes = Vec::with_capacity(128);
+        bytes.clear();
         postcard::serialize_with_flavor(foo, PreallocatedVec::new(&mut bytes)).unwrap();
     });
 }
@@ -86,10 +88,11 @@ fn serde_deserialize(b: &mut Bencher) {
 #[bench]
 fn serde_serialize(b: &mut Bencher) {
     let foo = Foo::default();
+    let mut bytes = Vec::with_capacity(128);
 
     b.iter(|| {
         let foo = black_box(&foo);
-        let mut bytes = Vec::with_capacity(128);
+        bytes.clear();
         serde_bench::serialize(&mut bytes, foo).unwrap();
     });
 }
