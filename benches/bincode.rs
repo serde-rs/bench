@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::hint::black_box;
 use test::Bencher;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, bincode::Encode, bincode::Decode)]
 struct Foo {
     bar: String,
     baz: u64,
@@ -28,25 +28,49 @@ impl Default for Foo {
 }
 
 #[bench]
-fn bincode_deserialize(b: &mut Bencher) {
+fn bincode_serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
-    let bytes = bincode::serialize(&foo).unwrap();
+    let bytes = bincode::serde::encode_to_vec(&foo, bincode::config::standard()).unwrap();
 
     b.iter(|| {
         let bytes = black_box(&bytes);
-        bincode::deserialize::<Foo>(bytes).unwrap()
+        bincode::serde::decode_from_slice::<Foo, _>(bytes, bincode::config::standard()).unwrap()
     });
 }
 
 #[bench]
-fn bincode_serialize(b: &mut Bencher) {
+fn bincode_serde_serialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
 
     b.iter(|| {
         let foo = black_box(&foo);
         bytes.clear();
-        bincode::serialize_into(&mut bytes, foo).unwrap();
+        bincode::serde::encode_into_std_write(foo, &mut bytes, bincode::config::standard())
+            .unwrap();
+    });
+}
+
+#[bench]
+fn bincode_decode(b: &mut Bencher) {
+    let foo = Foo::default();
+    let bytes = bincode::encode_to_vec(&foo, bincode::config::standard()).unwrap();
+
+    b.iter(|| {
+        let bytes = black_box(&bytes);
+        bincode::decode_from_slice::<Foo, _>(bytes, bincode::config::standard()).unwrap()
+    });
+}
+
+#[bench]
+fn bincode_encode(b: &mut Bencher) {
+    let foo = Foo::default();
+    let mut bytes = Vec::with_capacity(128);
+
+    b.iter(|| {
+        let foo = black_box(&foo);
+        bytes.clear();
+        bincode::encode_into_std_write(foo, &mut bytes, bincode::config::standard()).unwrap();
     });
 }
 
