@@ -6,6 +6,8 @@
     clippy::needless_lifetimes
 )]
 
+extern crate serde_core as serde;
+
 mod de;
 mod error;
 mod ser;
