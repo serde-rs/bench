@@ -14,7 +14,7 @@ rust-version = "1.68"
 
 [dependencies]
 byteorder = "1.4.3"
-serde = "1.0.166"
+serde_core = "1.0.220"
 
 [dev-dependencies]
 bincode = { version = "2", features = ["derive", "serde"] }
