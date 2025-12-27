@@ -6,9 +6,9 @@ extern crate test;
 mod flavor;
 
 use crate::flavor::PreallocatedVec;
+use criterion::{criterion_group, criterion_main, Bencher, Criterion};
 use serde::{Deserialize, Serialize};
 use std::hint::black_box;
-use test::Bencher;
 
 #[derive(Serialize, Deserialize, bincode::Encode, bincode::Decode)]
 struct Foo {
@@ -27,7 +27,6 @@ impl Default for Foo {
     }
 }
 
-#[bench]
 fn bincode_serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let bytes = bincode::serde::encode_to_vec(&foo, bincode::config::standard()).unwrap();
@@ -38,7 +37,6 @@ fn bincode_serde_deserialize(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn bincode_serde_serialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
@@ -51,7 +49,6 @@ fn bincode_serde_serialize(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn bincode_decode(b: &mut Bencher) {
     let foo = Foo::default();
     let bytes = bincode::encode_to_vec(&foo, bincode::config::standard()).unwrap();
@@ -62,7 +59,6 @@ fn bincode_decode(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn bincode_encode(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
@@ -74,7 +70,6 @@ fn bincode_encode(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn postcard_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let bytes = postcard::to_stdvec(&foo).unwrap();
@@ -85,7 +80,6 @@ fn postcard_deserialize(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn postcard_serialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
@@ -97,7 +91,6 @@ fn postcard_serialize(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::new();
@@ -109,7 +102,6 @@ fn serde_deserialize(b: &mut Bencher) {
     });
 }
 
-#[bench]
 fn serde_serialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::with_capacity(128);
@@ -120,3 +112,17 @@ fn serde_serialize(b: &mut Bencher) {
         serde_bench::serialize(&mut bytes, foo).unwrap();
     });
 }
+
+fn bench(c: &mut Criterion) {
+    c.bench_function("bincode_serde_deserialize", bincode_serde_deserialize);
+    c.bench_function("bincode_serde_serialize", bincode_serde_serialize);
+    c.bench_function("bincode_decode", bincode_decode);
+    c.bench_function("bincode_encode", bincode_encode);
+    c.bench_function("postcard_deserialize", postcard_deserialize);
+    c.bench_function("postcard_serialize", postcard_serialize);
+    c.bench_function("serde_deserialize", serde_deserialize);
+    c.bench_function("serde_serialize", serde_serialize);
+}
+
+criterion_group!(benches, bench);
+criterion_main!(benches);
