@@ -18,8 +18,13 @@ serde_core = "1.0.220"
 
 [dev-dependencies]
 bincode = { version = "2", features = ["derive", "serde"] }
+criterion = { version = "0.8", default-features = false }
 postcard = { version = "1", features = ["use-std"] }
 serde = { version = "1", features = ["derive"] }
+
+[[bench]]
+name = "bench"
+harness = false
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
