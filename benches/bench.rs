@@ -91,6 +91,27 @@ fn postcard_serialize(b: &mut Bencher) {
     });
 }
 
+fn postcard2_deserialize(b: &mut Bencher) {
+    let foo = Foo::default();
+    let bytes = postcard2::to_vec(&foo).unwrap();
+
+    b.iter(|| {
+        let bytes = black_box(&bytes);
+        postcard2::from_bytes::<Foo>(bytes).unwrap()
+    });
+}
+
+fn postcard2_serialize(b: &mut Bencher) {
+    let foo = Foo::default();
+    let mut bytes = Vec::with_capacity(128);
+
+    b.iter(|| {
+        let foo = black_box(&foo);
+        bytes.clear();
+        postcard2::serialize_with_flavor(foo, PreallocatedVec::new(&mut bytes)).unwrap();
+    });
+}
+
 fn serde_deserialize(b: &mut Bencher) {
     let foo = Foo::default();
     let mut bytes = Vec::new();
@@ -120,6 +141,8 @@ fn bench(c: &mut Criterion) {
     c.bench_function("bincode_encode", bincode_encode);
     c.bench_function("postcard_deserialize", postcard_deserialize);
     c.bench_function("postcard_serialize", postcard_serialize);
+    c.bench_function("postcard2_deserialize", postcard2_deserialize);
+    c.bench_function("postcard2_serialize", postcard2_serialize);
     c.bench_function("serde_deserialize", serde_deserialize);
     c.bench_function("serde_serialize", serde_serialize);
 }
