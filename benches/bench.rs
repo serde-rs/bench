@@ -1,5 +1,5 @@
 #![feature(test)]
-#![allow(clippy::elidable_lifetime_names)]
+#![allow(clippy::disallowed_names, clippy::elidable_lifetime_names)]
 
 extern crate test;
 
